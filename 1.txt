@@ -1,9 +1,0 @@
-asdnadasdasda
-damskdmaksadasdasd
-asdjasdiasjdijasdi
-sadmasdkasmdkkdskdosk
-			kill -9 `ps -ef | grep "SNAPSHOT.jar" | awk '{print $2}'`
-
-
-http://j7a501.p.ssafy.io:9090/project/a501
-b6c57147bc4aa8d98d8e0cedbd132026
