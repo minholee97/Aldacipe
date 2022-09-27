@@ -1,5 +1,0 @@
-asdnadasdasda
-damskdmaksadasdasd
-asdjasdiasjdijasdi
-sadmasdkasmdkkdskdosk
-			kill -9 `ps -ef | grep "SNAPSHOT.jar" | awk '{print $2}'`
