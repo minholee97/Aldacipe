@@ -2,15 +2,15 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 // redux
 import { useDispatch } from 'react-redux';
-import { loginActions } from '../../../redux/slice/login';
-import { useSelector } from 'react-redux/es/exports';
+import { loginActions } from '../../redux/slice/login';
 // custom component
-import NavbarSearchInput from './NavbarSearchInput';
+import { useSelector } from 'react-redux/es/exports';
+import SearchInput from '../UI/SearchInput';
 // external component
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 // api
-import { logout } from '../../../api/auth';
+import { logout } from '../../api/auth';
 // css
 import classes from './Navbar.module.scss';
 
@@ -49,12 +49,10 @@ export default function Navbar() {
             <div>레시피</div>
           </Link>
           <div>내 냉장고</div>
-          <Link to={`/dashboard`}>
-            <div>영양관리</div>
-          </Link>
+          <div>영양관리</div>
         </div>
         <div className={classes.search}>
-          <NavbarSearchInput placeholder="요리 이름 검색" />
+          <SearchInput />
         </div>
 
         <div className={classes.userInfo} onClick={showMenuHandler}>
