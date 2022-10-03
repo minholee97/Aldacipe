@@ -3,29 +3,34 @@ import { styled } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import TagFacesIcon from '@mui/icons-material/TagFaces';
-import { Ingredient } from './interface';
+import { Ingredient } from '../../util/interface';
 
 const ListItem = styled('li')(({ theme }) => ({
   margin: theme.spacing(0.5),
 }));
 
-export default function ChipsArray(props: { ingredients: Ingredient[] }) {
-  const [chipData, setChipData] = React.useState<readonly Ingredient[]>(
-    props.ingredients
-  );
+export default function ChipsArray(props: {
+  ingredients: Ingredient[];
+  deleteIngre: (ingredientId: number) => void;
+}) {
+  const chipData = props.ingredients;
 
   const handleDelete = (chipToDelete: Ingredient) => () => {
-    setChipData((chips) => chips.filter((chip) => chip.id !== chipToDelete.id));
+    props.deleteIngre(+chipToDelete.id);
+    // setChipData((chips) => chips.filter((chip) => chip.id !== chipToDelete.id));
   };
 
   return (
     <Paper
       sx={{
         display: 'flex',
-        justifyContent: 'center',
+        // justifyContent: 'center',
         flexWrap: 'wrap',
         listStyle: 'none',
-        p: 0.5,
+        bgcolor: 'transparent',
+        border: 'none',
+        boxShadow: 'none',
+        p: 0,
         m: 0,
       }}
       component="ul"

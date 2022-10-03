@@ -2,6 +2,8 @@ import React, { ChangeEvent, useRef, useState, useEffect } from 'react';
 import BirthdayInput from '../common/mui/BirthdayInput';
 
 import { debounce } from 'lodash';
+// api
+import { emailDupCheck } from '../../api/signup';
 
 // interface - 타입스크립트 인터페이스를 다른 곳에 입력해두고 받아옴
 import * as all from './config';
@@ -20,6 +22,7 @@ export const FormContent1: React.FC<{
       ? emailRegExp.test(props.formData.email)
       : false
   );
+  const [emailValidMsg, setEmailValidMsg] = useState<null | string>(null);
 
   // useRef 는 이런식으로 제네릭<null>
   const submitStepOneDataHandler = () => {
@@ -27,13 +30,21 @@ export const FormContent1: React.FC<{
   };
 
   const checkEmailValid = (event: React.FocusEvent<HTMLInputElement>) => {
-    debounce(() => {
+    debounce(async () => {
       setEmail(event.target.value);
 
       if (emailRegExp.test(event.target.value)) {
-        setEmailValid(() => true);
+        const isDup = await emailDupCheck(event.target.value);
+        if (!isDup) {
+          setEmailValid(() => false);
+          setEmailValidMsg(() => '중복된 이메일입니다.');
+        } else {
+          setEmailValid(() => true);
+          setEmailValidMsg(null);
+        }
       } else {
         setEmailValid(() => false);
+        setEmailValidMsg(() => '유효하지 않은 이메일입니다.');
       }
     }, 500)();
   };
@@ -156,7 +167,7 @@ export const FormContent2: React.FC<{
         <div className={`${classes.genderContainer}`}>
           <div className={classes.title}>성별</div>
           <div>
-            <div>
+            <div className={classes.genderOption}>
               <label htmlFor="male">남성</label>
               <input
                 type="radio"
@@ -167,7 +178,7 @@ export const FormContent2: React.FC<{
                 onChange={genderChange}
               />
             </div>
-            <div>
+            <div className={classes.genderOption}>
               <label htmlFor="female">여성</label>
               <input
                 type="radio"
@@ -247,7 +258,7 @@ export const FormContent3: React.FC<{
 }> = (props) => {
   const [password, setPassword] = useState('');
   const [pwValid, setPwValid] = useState(false);
-
+  const passwordsRef = useRef<HTMLInputElement[] | null[]>([]);
   useEffect(() => {
     if (pwValid) {
       props.updatePw(password);
@@ -263,6 +274,7 @@ export const FormContent3: React.FC<{
     } else {
       setPassword(() => '');
     }
+    setPwValid(false);
   };
   const checkPasswordConfirm = (event: React.FocusEvent<HTMLInputElement>) => {
     const pw2 = event.target.value;
@@ -276,15 +288,33 @@ export const FormContent3: React.FC<{
   const formStepBackHandler = () => {
     props.stepBackHandle();
   };
+  const enterHandler = (
+    event: React.KeyboardEvent<HTMLDivElement | HTMLInputElement>
+  ) => {
+    if (!(event.target instanceof HTMLInputElement)) {
+      return;
+    }
+    if (event.key === 'Enter' && !pwValid) {
+      const tmp: any = event.target;
 
+      if (tmp.dataset.idx < passwordsRef.current.length - 1) {
+        passwordsRef.current[+tmp.dataset.idx + 1]!.focus();
+      }
+    }
+    return;
+  };
   return (
-    <div className={classes.wrapper}>
+    <div className={classes.wrapper} onKeyDown={enterHandler}>
       <label htmlFor="password1">비밀번호</label>
       <input
         type="password"
         className={classes.signupInput}
         id="password1"
         onChange={checkPasswordValid}
+        data-idx={0}
+        ref={(ele) => {
+          passwordsRef.current[0] = ele;
+        }}
         autoFocus
       />
       <label htmlFor="password1">비밀번호 확인</label>
@@ -292,13 +322,18 @@ export const FormContent3: React.FC<{
         type="password"
         className={classes.signupInput}
         id="password2"
+        data-idx={1}
         onChange={checkPasswordConfirm}
+        ref={(ele) => {
+          passwordsRef.current[1] = ele;
+        }}
       />
       <div className={classes.btnContainer}>
         <button
           type="button"
           className={classes.prevBtn}
           onClick={formStepBackHandler}
+          tabIndex={-1}
         >
           이전
         </button>
