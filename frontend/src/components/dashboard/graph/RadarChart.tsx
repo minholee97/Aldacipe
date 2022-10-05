@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 // API
 import { fetchUserNutrientByPeriod } from '../../../api/dashboard';
 // external module
+
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -13,14 +14,21 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import moment from 'moment';
 import { Radar } from 'react-chartjs-2';
 // external component
+import StickyNote2Icon from '@mui/icons-material/StickyNote2';
+
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import styled from '@emotion/styled';
 
 // custom component
 
 // css, interface(type)
 import classes from './RadarChart.module.scss';
 import { RadarChartData } from '../../../util/interface';
+import mealEmpty from '../../../assets/mealPlanner_empty.png';
+
 ChartJS.register(
   RadialLinearScale,
   PointElement,
@@ -30,7 +38,18 @@ ChartJS.register(
   Legend
 );
 
-const RadarChart = (props: { period: string }) => {
+const CustomStickyNote2Icon = styled(StickyNote2Icon)`
+  font-size: 10rem;
+  color: #98eab9;
+`;
+
+// 부모: dashboardPage
+
+const RadarChart = (props: {
+  period: string;
+  isUpdated: boolean;
+  onChartDataLoaded: () => void;
+}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [chartData, setChartData] = useState<RadarChartData | null>(null);
   const graphName: { [index: string]: string } = {
@@ -51,15 +70,15 @@ const RadarChart = (props: { period: string }) => {
           {
             label: `${graphName[props.period]}섭취한 영양소`,
             data: newArr,
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgba(255, 99, 132, 1)',
+            backgroundColor: 'rgba(47, 188, 160,0.3)',
+            borderColor: '#058181',
             borderWidth: 2,
           },
           {
             label: `권장 섭취 영양소`,
             data: [100, 100, 100, 100, 100],
-            backgroundColor: 'rgba(115, 60, 245, 0.2)',
-            borderColor: '#1c5abc',
+            backgroundColor: 'rgba(255, 235, 53, 0.334)',
+            borderColor: '#bcaf1c',
             borderWidth: 2,
           },
         ],
@@ -69,13 +88,12 @@ const RadarChart = (props: { period: string }) => {
         setChartData(null);
       } else {
         setChartData(radarChartData);
+        props.onChartDataLoaded();
       }
-
-      // radarChartData.datasets[0].data = Object.values(data) as number[];
     })();
 
     setIsLoading(false);
-  }, [props.period]);
+  }, [props.period, props.isUpdated]);
 
   return (
     <>
@@ -83,7 +101,20 @@ const RadarChart = (props: { period: string }) => {
         <div className={classes.wrapper}>
           <div className={classes.container}>
             <div className={classes.header}>
-              {/* {graphName[props.period]}섭취한 영양소 */}
+              <CalendarMonthIcon />
+              {props.period === 'day'
+                ? moment(new Date()).format('YYYY-MM-DD')
+                : props.period === 'week'
+                ? `${moment(new Date())
+                    .subtract(1, 'week')
+                    .format('YYYY-MM-DD')} ~ ${moment(new Date()).format(
+                    'YYYY-MM-DD'
+                  )}`
+                : `${moment(new Date())
+                    .subtract(1, 'month')
+                    .format('YYYY-MM-DD')} ~ ${moment(new Date()).format(
+                    'YYYY-MM-DD'
+                  )}`}
             </div>
             <div className={classes.main}>
               <Radar
@@ -120,7 +151,13 @@ const RadarChart = (props: { period: string }) => {
           </div>
         </div>
       ) : !isLoading && !chartData ? (
-        <div>섭취 기록을 추가해 주세요</div>
+        <div className={classes.empty}>
+          <CustomStickyNote2Icon />
+          <div>
+            먹은 음식을 추가하면
+            <br /> 기록이 시작됩니다
+          </div>
+        </div>
       ) : (
         <></>
       )}

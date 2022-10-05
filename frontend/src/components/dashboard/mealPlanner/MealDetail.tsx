@@ -11,22 +11,32 @@ import { fetchRecipeNutrition } from '../../../api/nutrition';
 import NutritionInfo from '../../UI/NutritionInfo';
 // css, interface(type)
 import classes from './MealDetail.module.scss';
-import { Nutrient } from '../../../util/interface';
-const MealDetail = (props: { foodId: number; onDetailClose: () => void }) => {
-  const [foodInfo, setFoodInfo] = useState<Nutrient | null>(null);
+import { Recipe, Nutrient } from '../../../util/interface';
+const MealDetail = (props: {
+  foodInfo: { foodId: number; foodType: string };
+  onDetailClose: () => void;
+}) => {
+  const [foodNutInfo, setFoodNutInfo] = useState<Nutrient | null>(null);
+  // const [recipeInfo, setRecipeInfo] = useState<Recipe|null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const handleClose = () => props.onDetailClose();
 
   useEffect(() => {
     setIsLoading(true);
-    // console.log(props.foodId);
+    // console.log(props.foodInfo.foodId, props.foodInfo.foodType);
 
     (async () => {
-      const data = await fetchRecipeNutrition(props.foodId);
-      setFoodInfo(data);
+      const data = await fetchRecipeNutrition(
+        props.foodInfo.foodId,
+        props.foodInfo.foodType
+      );
+      // console.log(data);
+
+      setFoodNutInfo(data);
     })();
+
     setIsLoading(false);
-  }, [props.foodId]);
+  }, [props.foodInfo]);
 
   return (
     <>
@@ -36,7 +46,7 @@ const MealDetail = (props: { foodId: number; onDetailClose: () => void }) => {
           {!isLoading && (
             <div className={classes.main}>
               <NutritionInfo
-                nutrition={foodInfo!}
+                nutrition={foodNutInfo!}
                 dashboard
                 onDetailClose={handleClose}
               />

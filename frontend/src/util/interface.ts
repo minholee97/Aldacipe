@@ -9,6 +9,13 @@ export interface Recipe {
 export interface Meal extends Recipe {
   type: string;
 }
+// main
+export interface CardRecipe {
+  id: number;
+  name: string;
+  imgURL: string;
+  avgScore: number;
+}
 
 // search, mypage
 export interface Ingredient {
@@ -16,6 +23,7 @@ export interface Ingredient {
   name: string;
   largeCategory: string;
   smallCategory: string;
+  weight: number;
 }
 
 // mypage
@@ -99,6 +107,7 @@ export interface RecipeDetail {
   nutrient: Nutrient;
   recipe: Recipe;
   userEvaluationInfo: { didEvaluate: boolean; score: number };
+  avgEvalutationScore: number;
 }
 
 export interface NutObj {
@@ -114,6 +123,9 @@ export interface NutDictionary {
 
 export interface IngredientCategoryDictionary {
   [index: string]: number;
+}
+export interface IngredientColorDictionary {
+  [index: string]: { primary: string; secondary: string };
 }
 
 // ------------- dashboard 관련

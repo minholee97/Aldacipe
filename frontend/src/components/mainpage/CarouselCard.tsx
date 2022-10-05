@@ -8,13 +8,10 @@ import { Link } from 'react-router-dom';
 
 // css, interfacde
 import classes from './CarouselCard.module.scss';
-import { CardRecipe } from './interface';
+import { CardRecipe } from '../../util/interface';
 import { API_URL } from '../../api/config/http-config';
 
 const CarouselCard = (props: { card: CardRecipe }) => {
-  // const linkDetail = (id: number) => {
-  //   <Link></Link>
-  // }
   return (
     <>
       <div className={classes.card}>
@@ -24,7 +21,8 @@ const CarouselCard = (props: { card: CardRecipe }) => {
               <CardMedia
                 component="img"
                 height="150"
-                image={`${API_URL}image/${props.card.imgURL}`}
+                image={`${API_URL}image?path=${props.card.imgURL}`}
+                // image={`${API_URL}image?path=${props.card.image}`}
                 alt="green iguana"
               />
               <CardContent>
@@ -32,7 +30,7 @@ const CarouselCard = (props: { card: CardRecipe }) => {
                   {props.card.name}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {props.card.avgScore}
+                  {/* {props.card.avgScore} */}
                 </Typography>
               </CardContent>
             </CardActionArea>

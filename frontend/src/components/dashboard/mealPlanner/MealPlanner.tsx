@@ -1,51 +1,43 @@
 // react core
+import { useEffect, useState } from 'react';
 
 // API
 import { fetchUserIntake } from '../../../api/dashboard';
 // external module
 import moment from 'moment';
 // external component
-import Modal from '@mui/material/Modal';
-import { Backdrop } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import styled from '@emotion/styled';
 // custom component
-import { useEffect, useState } from 'react';
-import MealPlannerSearchInput from './MealPlannerSearchInput';
 
 import MealListItem from './MealListItem';
 // css, interface(type)
 import classes from './MealPlanner.module.scss';
 import { Intake } from '../../../util/interface';
+// etc
+import mealEmpty from '../../../assets/mealPlanner_empty.png';
 
-const CustomBackdrop = styled(Backdrop)`
-  background-color: transparent;
-`;
-
+// 부모: DashboardPage
 export default function MealPlanner(props: {
+  isUpdated: boolean;
   onSearch: () => void;
-  onFoodDetail: (id: number) => void;
+  onFoodDetail: (id: number, type: string) => void;
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [mealList, setMealList] = useState<Intake[]>([]);
-  const [modalOpen, setModalOpen] = useState(false);
   useEffect(() => {
     setIsLoading(true);
 
     fetchUserIntake(moment(new Date()).format('YYYY-MM-DD'), setMealList);
 
     setIsLoading(false);
-  }, []);
+  }, [props.isUpdated]);
   const handleSearchOpen = () => {
-    setModalOpen(true);
+    // setModalOpen(true);
     props.onSearch();
   };
-  const handleModalClose = () => {
-    console.log('모달 닫기');
-    setModalOpen(false);
-  };
-  const handleFoodDetailOpen = (foodId: number) => {
-    props.onFoodDetail(foodId);
+
+  const handleFoodDetailOpen = (foodId: number, foodType: string) => {
+    props.onFoodDetail(foodId, foodType);
   };
   return (
     <>
@@ -62,7 +54,13 @@ export default function MealPlanner(props: {
           </div>
           <div className={classes.main}>
             {mealList.length === 0 ? (
-              <div>음식 추가해주세요</div>
+              <div className={classes.empty}>
+                <img src={mealEmpty} width={'200px'} alt="재료이미지" />
+                <div>
+                  먹은 음식을
+                  <br /> 추가해주세요
+                </div>
+              </div>
             ) : (
               mealList.map((item) => (
                 <MealListItem

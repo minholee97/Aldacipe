@@ -1,24 +1,24 @@
 // react core
-import { useState } from 'react';
 
 // API
 import { API_URL } from '../../../api/config/http-config';
-import { fetchRecipeNutrition } from '../../../api/nutrition';
 // external module
 
 // external component
 import InfoIcon from '@mui/icons-material/Info';
 // custom component
-import MealDetail from './MealDetail';
+import RecipeImgContainer from '../../UI/RecipeImgContainer';
 // css, interface(type)
 import classes from './MealListItem.module.scss';
-import { Nutrient, Intake } from '../../../util/interface';
+import { Intake } from '../../../util/interface';
+
+// 부모: MealPlanner
 export default function MealListItem(props: {
   intake: Intake;
-  onFoodDetail: (id: number) => void;
+  onFoodDetail: (id: number, type: string) => void;
 }) {
   const handleDetailToggle = () => {
-    props.onFoodDetail(props.intake.intakeTargetId);
+    props.onFoodDetail(props.intake.intakeTargetId, props.intake.intakeType);
   };
 
   return (
@@ -27,7 +27,12 @@ export default function MealListItem(props: {
         <div className={classes.container}>
           <div className={classes.left}>
             <div>
-              <img src={`${API_URL}${props.intake.image}`} alt="그림" />
+              <RecipeImgContainer
+                src={`${API_URL}image?path=${props.intake.image}`}
+                width={'30px'}
+                height={'30px'}
+                alt="요리"
+              />
             </div>
             <div className={classes.foodName}>
               <div>
